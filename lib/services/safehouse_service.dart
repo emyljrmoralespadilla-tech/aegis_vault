@@ -25,6 +25,9 @@ class SafehouseService {
       );
 
       return SafehouseResult(data: response, isOffline: false);
+
+
+
     } catch (e) {
       final offlineData = await getOfflineData();
       return SafehouseResult(data: offlineData, isOffline: true);
