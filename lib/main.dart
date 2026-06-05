@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
     debugPrint("Distancia: $distance");
 
     // Vibrar si está cerca
+    
     if (distance < 100) {
       final hasVibrator = await Vibration.hasVibrator();
       if (hasVibrator == true) {
