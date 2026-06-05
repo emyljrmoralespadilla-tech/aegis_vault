@@ -7,6 +7,7 @@ class Safehouse {
   final bool isCompromised;
   final bool isSelected;
 
+
   Safehouse({
     required this.codename,
     required this.sector,
