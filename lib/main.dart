@@ -26,9 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Aegis Vault',
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: const HomePage(),
     );
   }
@@ -79,13 +77,11 @@ class _HomePageState extends State<HomePage> {
     debugPrint("Distancia: $distance");
 
     // Vibrar si está cerca
-    
+
     if (distance < 100) {
       final hasVibrator = await Vibration.hasVibrator();
       if (hasVibrator == true) {
-        Vibration.vibrate(
-          pattern: [500, 1000, 500, 1000],
-        );
+        Vibration.vibrate(pattern: [500, 1000, 500, 1000]);
       }
     }
   }
@@ -112,8 +108,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     setState(() {
-      safehouses =
-          result.data.map((e) => Safehouse.fromJson(e)).toList();
+      safehouses = result.data.map((e) => Safehouse.fromJson(e)).toList();
       isOffline = result.isOffline;
     });
   }
@@ -123,15 +118,13 @@ class _HomePageState extends State<HomePage> {
     final bannerText = isOffline
         ? 'Modo Desconectado - Datos Locales Protegidos'
         : safehouses.isEmpty
-            ? 'Cargando refugios...'
-            : 'Modo conectado';
+        ? 'Cargando refugios...'
+        : 'Modo conectado';
 
     final bannerColor = isOffline ? Colors.red : Colors.green;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Aegis Vault"),
-      ),
+      appBar: AppBar(title: const Text("Aegis Vault")),
       body: Column(
         children: [
           Container(
@@ -140,77 +133,77 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10),
             child: Text(
               bannerText,
-              style: const TextStyle(
-                color: Colors.white,
-              ),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
 
           Expanded(
-      child: GridView.builder(
-        padding: const EdgeInsets.all(10),
-        itemCount: safehouses.length,
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemBuilder: (context, index) {
-
-          final house = safehouses[index];
-          final cardColor = house.isSelected
-              ? (isOffline ? Colors.red : Colors.green)
-              : null;
-
-          return Semantics(
-            label:
-                "Refugio ${house.codename}, ubicado en el sector ${house.sector}, capacidad para ${house.capacity} agentes",
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  for (var i = 0; i < safehouses.length; i++) {
-                    safehouses[i] = safehouses[i].copyWith(
-                      isSelected: i == index,
-                    );
-                  }
-                });
-              },
-              child: Card(
-                color: cardColor,
-                elevation: house.isSelected ? 12 : 4,
-                shadowColor: Colors.black54,
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        house.codename,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(house.sector),
-                      Text(
-                        "Capacidad: ${house.capacity}",
-                      ),
-                      const Text(
-                        'Seguro',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            child: GridView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: safehouses.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
               ),
+              itemBuilder: (context, index) {
+                final house = safehouses[index];
+                final cardColor = house.isCompromised
+                    ? Theme.of(context).colorScheme.errorContainer
+                    : (house.isSelected
+                          ? (isOffline ? Colors.red : Colors.green)
+                          : null);
+
+                return Semantics(
+                  label:
+                      "Refugio ${house.codename}, ubicado en el sector ${house.sector}, capacidad para ${house.capacity} agentes. Estado ${house.isCompromised ? 'comprometido' : 'seguro'}",
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        for (var i = 0; i < safehouses.length; i++) {
+                          safehouses[i] = safehouses[i].copyWith(
+                            isSelected: i == index,
+                          );
+                        }
+                      });
+                    },
+                    child: Card(
+                      color: cardColor,
+                      elevation: house.isSelected ? 12 : 4,
+                      shadowColor: Colors.black54,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              house.codename,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(house.sector),
+                            Text("Capacidad: ${house.capacity}"),
+                            Text(
+                              house.isCompromised
+                                  ? '⚠ COMPROMETIDO'
+                                  : '✓ SEGURO',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: house.isCompromised
+                                    ? Theme.of(context).colorScheme.error
+                                    : Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
-    ),
-  ],
-),
     );
   }
 }
